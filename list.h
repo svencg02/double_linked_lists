@@ -1,8 +1,8 @@
 // =================================================================
 //
 // File: list.h
-// Author:
-// Date:
+// Author: Sven Chávez García 
+// Date: 10-05-22
 //
 // =================================================================
 #ifndef DOUBLELINKEDLIST_H
@@ -222,8 +222,22 @@ T DoubleLinkedList<T>::last() const {
 // =================================================================
 template <class T>
 T DoubleLinkedList<T>::before(T val) const {
-	
+	Node<T> *cNode;
+	cNode = head; // empezamos desde la cabeza 
+
+	for (int i = 0; i < size; i++){ // se recorre la lista 
+		if (cNode->value == val){ // si el valor es igual al nodo actual...
+			if (cNode->previous == NULL) // se checa si el apuntador es el head
+      		{
+        		throw NoSuchElement(); // si si entonces no hay elemento anterior
+      		}
+    	return cNode->previous->value; // se devuelve el valor anterior al valor ingresado
+		}
+    cNode = cNode->next; // se recorre la lista
+	}
+	throw NoSuchElement();
 	return val;
+	
 }
 
 // =================================================================
@@ -233,7 +247,20 @@ T DoubleLinkedList<T>::before(T val) const {
 // =================================================================
 template <class T>
 T DoubleLinkedList<T>::after(T val) const {
-	
+	Node<T> *cNode; // se crea un nodo de recorrido
+	cNode = head; // se iguala a la cabeza
+
+	for (int i = 0; i < size; i++){ // se recorre la lista 
+		if (cNode->value == val){ // si se encuentra el valor 
+      		if (cNode->next == NULL){ // si es el final de la lista
+        		throw NoSuchElement(); // no hay elementos
+      		}
+      		return cNode->next->value;// si si se devuelve el valor del siguiente nodo 
+    	}
+    	cNode = cNode->next; // se recorre la lista 
+	}
+
+	throw NoSuchElement();
 	return val;
 }
 
@@ -294,7 +321,39 @@ void DoubleLinkedList<T>::push_back(T val) {
 // =================================================================
 template <class T>
 void DoubleLinkedList<T>::insert_before(T lookingFor, T newVal) {
-	// TO DO
+	if (empty()){
+    push_front(newVal); // se checa si la lista esta vacia 
+    return;
+  }
+
+  Node<T> *cNode, *pNode, *nNode; // se crean los apuntadores con los que se va a recorrer la lista, siendo el actual el previo y el nuevo nodo
+  cNode = head; // se iguala al primer apuntador 
+
+  for (int i = 0; i < size; i++){ // se recorre la lista 
+    if (cNode->value == lookingFor){ // si es igual al valor que estamos buscando definido por el apuntador... 
+      nNode = new Node<T>(newVal); // se genera un nuevo nodo con el nuevo valor 
+
+      if (cNode->previous == NULL){ // si el valor se encuentra en la cabeza y por lo tanto no hay previous entonces... 
+        nNode->next = cNode; // el nuevo nodo se iguala al apuntador de head
+        cNode->previous = nNode; // el previo se cNode se iguala al apuntador del nuevo nodo
+        head = nNode; // y finalmente se iguala head al primer valor que es nuestro primer nodo 
+        size++; // se aumenta el tamaño
+        return;
+      }
+
+      pNode = cNode->previous; // si se encuentra en otra posicion sigue una logica similar 
+
+      pNode->next = nNode; // el apuntador del nodo previo apunta al nuevo nodo 
+      cNode->previous = nNode; // el apuntador previo del nodo acual se iguala al nuevo nodo 
+      nNode->previous = pNode; // el previo del nuevo nodo se iguala al  nodo previo 
+      nNode->next = cNode; //y el siguiente del nodo se iguala al nodo actual para mantener la lista
+
+      size++;// se aumenta el tamanio 
+      return;
+    }
+    cNode = cNode->next; // si no se cumple la condicion solo sigue recorriendo la lista
+  }
+  throw NoSuchElement(); // en caso de que se recorra la lista y no exista el elemento marca error 
 }
 
 // =================================================================
@@ -304,7 +363,39 @@ void DoubleLinkedList<T>::insert_before(T lookingFor, T newVal) {
 // =================================================================
 template <class T>
 void DoubleLinkedList<T>::insert_after(T lookingFor, T newVal) {
-	// TO DO
+	 if (empty()){
+    push_front(newVal);// se checa si la lista esta vacia
+    return;
+  }
+
+  Node<T> *cNode, *nxtNode, *nNode;// se crean los apuntadores con los que se va a recorrer la lista, siendo el actual el previo y el nuevo nodo
+  cNode = head; // se iguala al primer apuntador
+
+  for (int i = 0; i < size; i++){// se recorre la lista 
+    if (cNode->value == lookingFor){ // si es igual al valor que estamos buscando definido por el apuntador... 
+      nNode = new Node<T>(newVal); // se genera un nuevo nodo con el nuevo valor
+
+      if (cNode->next == NULL){ // si el valor se encuentra en la cabeza y por lo tanto no hay previous entonces...
+        nNode->previous = cNode; //el previo apuntador del nuevo nodo se iguala al nodo actual
+        cNode->next = nNode; // el apuntador siguiente del nodo actual se iguala al nuevo nodo	
+        size++;
+        return;
+      }
+
+      nxtNode = cNode->next; // el nodo siguiente se iguala a el apuntador del nodo actual
+
+      nxtNode->previous = nNode; // el previo del nodo siguiente se iguala al nuevo nodo
+      cNode->next = nNode; // el siguiente del nodo se iguala al nuevo nodo 
+      nNode->previous = cNode; // el previo del nuevo nodo se iguala al nodo actual 
+      nNode->next = nxtNode; // y el siguiente del nuevo nodo se iguala al nodo siguiente
+
+      size++;
+      return;
+    }
+    cNode = cNode->next; //  se recorre la lista a traves de apuntadores 
+  }
+  throw NoSuchElement();// en caso de que se recorra la lista y no exista el elemento marca error
+
 }
 
 // =================================================================
